@@ -1,22 +1,26 @@
+-- Создание таблицы пользователей
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
-    username VARCHAR(255) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    balance INT NOT NULL DEFAULT 1000,  -- Начальный баланс 1000 монет
-    created_at TIMESTAMP DEFAULT NOW()
+    username TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    balance INT NOT NULL DEFAULT 1000
 );
+
+-- Создание таблицы истории переводов монет
 CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
-    sender_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    receiver_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    amount INT NOT NULL CHECK (amount > 0),  -- Сумма перевода должна быть положительной
-    created_at TIMESTAMP DEFAULT NOW()
+    sender_id INT REFERENCES users(id),
+    receiver_id INT REFERENCES users(id),
+    amount INT NOT NULL,
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Создание таблицы покупок
 CREATE TABLE purchases (
     id SERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    item_id INT NOT NULL REFERENCES merch_items(id) ON DELETE CASCADE,
-    amount INT NOT NULL CHECK (amount > 0), -- Количество купленных товаров
-    total_price INT NOT NULL, -- Итоговая сумма
-    created_at TIMESTAMP DEFAULT NOW()
+    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    item_name TEXT NOT NULL,  -- Название товара (раз нет таблицы товаров)
+    quantity INT NOT NULL DEFAULT 1,
+    price INT NOT NULL, -- Стоимость одной единицы товара
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

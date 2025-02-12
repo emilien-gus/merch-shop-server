@@ -1,5 +1,3 @@
 package data
 
-var items map[string]int{
-	
-}
+var items map[string]int
