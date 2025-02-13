@@ -19,8 +19,7 @@ CREATE TABLE transactions (
 CREATE TABLE purchases (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    item_name TEXT NOT NULL,  -- Название товара (раз нет таблицы товаров)
+    item_name TEXT NOT NULL, 
     quantity INT NOT NULL DEFAULT 1,
-    price INT NOT NULL, -- Стоимость одной единицы товара
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    price INT NOT NULL,
 );
