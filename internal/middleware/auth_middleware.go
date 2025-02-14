@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -15,14 +16,14 @@ func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			c.JSON(401, gin.H{"error": "Authorization header is required"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header is required"})
 			c.Abort()
 			return
 		}
 
 		parts := strings.Split(authHeader, " ")
 		if len(parts) != 2 || parts[0] != "Bearer" {
-			c.JSON(401, gin.H{"error": "Invalid authorization header format"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid authorization header format"})
 			c.Abort()
 			return
 		}
@@ -31,7 +32,7 @@ func JWTMiddleware() gin.HandlerFunc {
 
 		// Загружаем секретный ключ из переменной окружения
 		if string(SecretKey) == "" {
-			c.JSON(500, gin.H{"error": "Internal server error: JWT secret is missing"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: JWT secret is missing"})
 			c.Abort()
 			return
 		}
@@ -45,7 +46,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		})
 
 		if err != nil {
-			c.JSON(401, gin.H{"error": "Invalid token: " + err.Error()})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: " + err.Error()})
 			c.Abort()
 			return
 		}
@@ -57,12 +58,12 @@ func JWTMiddleware() gin.HandlerFunc {
 				c.Next()
 				return
 			}
-			c.JSON(401, gin.H{"error": "Invalid token: missing user_id"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: missing user_id"})
 			c.Abort()
 			return
 		}
 
-		c.JSON(401, gin.H{"error": "Invalid token"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 		c.Abort()
 	}
 }
