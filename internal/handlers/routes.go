@@ -17,7 +17,7 @@ func SetupRoutes(db *sql.DB, r *gin.Engine) {
 	transactRepo := repository.NewTransactionRepository(db)
 
 	userService := services.NewUserService(userRep)
-	purchSer := services.NewBuyingService(purchRep)
+	purchSer := services.NewPurchaseService(purchRep)
 	transactSer := services.NewTransactionService(transactRepo)
 	infoSer := services.NewInfoService(userRep)
 

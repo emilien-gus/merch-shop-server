@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type BuyingHandler struct {
-	buyingService *services.BuyingService
+type PurchaseHandler struct {
+	buyingService *services.PurchaseService
 }
 
-func NewBuyingHandler(buyingService *services.BuyingService) *BuyingHandler {
-	return &BuyingHandler{buyingService: buyingService}
+func NewBuyingHandler(buyingService *services.PurchaseService) *PurchaseHandler {
+	return &PurchaseHandler{buyingService: buyingService}
 }
 
-func (bh *BuyingHandler) Buy(c *gin.Context) {
+func (bh *PurchaseHandler) Buy(c *gin.Context) {
 	item := c.Param("item")
 
 	userID, err := GetUserID(c)

@@ -16,7 +16,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func setupRouterBuy(purchaseHandler *handlers.BuyingHandler, authHandler *handlers.AuthHandler, middleware gin.HandlerFunc) *gin.Engine {
+func setupRouterBuy(purchaseHandler *handlers.PurchaseHandler, authHandler *handlers.AuthHandler, middleware gin.HandlerFunc) *gin.Engine {
 
 	router := gin.Default()
 	router.Group("/api")
@@ -34,7 +34,7 @@ func TestPurchaseMerch(t *testing.T) {
 	repo := repository.NewPurchaseRepository(db)
 	authRepo := repository.NewUserRepository(db)
 
-	service := services.NewBuyingService(repo)
+	service := services.NewPurchaseService(repo)
 	authServ := services.NewUserService(authRepo)
 
 	handler := handlers.NewBuyingHandler(service)

@@ -6,7 +6,7 @@ import (
 )
 
 type PurchaseRepositoryInteface interface {
-	InsertBuying(userID int, item string, price int) error
+	InsertPurchase(userID int, item string, price int) error
 }
 
 type PurchaseRepository struct {
@@ -17,7 +17,7 @@ func NewPurchaseRepository(db *sql.DB) *PurchaseRepository {
 	return &PurchaseRepository{db: db}
 }
 
-func (pr *PurchaseRepository) InsertBuying(userID int, item string, price int) error {
+func (pr *PurchaseRepository) InsertPurchase(userID int, item string, price int) error {
 	tx, err := pr.db.Begin()
 	if err != nil {
 		return err
