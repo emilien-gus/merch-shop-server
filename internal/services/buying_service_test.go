@@ -7,26 +7,22 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-// MockPurchaseRepository представляет собой мок репозитория для покупок
 type MockPurchaseRepository struct {
 	mock.Mock
 }
 
-// NewMockPurchaseRepository создает новый экземпляр мок репозитория для покупок
 func NewMockPurchaseRepository() *MockPurchaseRepository {
 	return &MockPurchaseRepository{}
 }
 
-// InsertBuying мокаем вставку покупки
-func (m *MockPurchaseRepository) InsertBuying(userID int, item string, price int) error {
+func (m *MockPurchaseRepository) InsertPurchase(userID int, item string, price int) error {
 	args := m.Called(userID, item, price)
-	return args.Error(0) // Возвращаем ошибку, если она была настроена
+	return args.Error(0)
 }
 
-// Тестирование метода покупки
 func TestInsertBuying_Success(t *testing.T) {
 	mockRepo := NewMockPurchaseRepository()
-	service := NewBuyingService(mockRepo)
+	service := NewPurchaseService(mockRepo)
 
 	mockRepo.On("InsertBuying", 1, "t-shirt", 80).Return(nil)
 
@@ -38,7 +34,7 @@ func TestInsertBuying_Success(t *testing.T) {
 
 func TestInsertBuying_NoItemError(t *testing.T) {
 	mockRepo := NewMockPurchaseRepository()
-	service := NewBuyingService(mockRepo)
+	service := NewPurchaseService(mockRepo)
 
 	err := service.BuyItem(1, "ball")
 
