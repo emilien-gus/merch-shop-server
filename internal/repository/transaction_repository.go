@@ -5,6 +5,11 @@ import (
 	"errors"
 )
 
+type TransactionRepositoryInterface interface {
+	InsertTransaction(senderID int, receiver int, amount int) error
+	GetUserIDByUsername(username string) (int, error)
+}
+
 type TransactionRepository struct {
 	db *sql.DB
 }
@@ -13,17 +18,12 @@ func NewTransactionRepository(db *sql.DB) *TransactionRepository {
 	return &TransactionRepository{db: db}
 }
 
-func (tr *TransactionRepository) InsertTransaction(senderID int, receiver string, amount int) error {
+func (tr *TransactionRepository) InsertTransaction(senderID int, receiverID int, amount int) error {
 	tx, err := tr.db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
-
-	receiverID, err := tr.GetUserIDByUsername(receiver)
-	if err != nil {
-		return err
-	}
 
 	res, err := tx.Exec("UPDATE users SET balance = balance - $1 WHERE id = $2 AND balance >= $1", amount, senderID)
 	if err != nil {
@@ -35,7 +35,7 @@ func (tr *TransactionRepository) InsertTransaction(senderID int, receiver string
 		return err
 	}
 	if rowsAffected == 0 {
-		return errors.New("insufficient funds")
+		return errors.New("low balance")
 	}
 
 	_, err = tx.Exec("UPDATE users SET balance = balance + $1 WHERE id = $2", amount, receiverID)

@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"avito-shop/internal/services"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -20,12 +21,14 @@ func (bh *BuyingHandler) Buy(c *gin.Context) {
 
 	userID, err := GetUserID(c)
 	if err != nil {
+		log.Printf("Error: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = bh.buyingService.BuyItem(userID, item)
 	if err != nil {
+		log.Printf("Error: %v", err)
 		errorString := err.Error()
 		if errorString == "item not found" || errorString == "insufficient funds" {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

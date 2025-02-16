@@ -5,6 +5,10 @@ import (
 	"errors"
 )
 
+type PurchaseRepositoryInteface interface {
+	InsertBuying(userID int, item string, price int) error
+}
+
 type PurchaseRepository struct {
 	db *sql.DB
 }

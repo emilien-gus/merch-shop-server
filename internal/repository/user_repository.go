@@ -7,6 +7,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type UserRepositoryInterface interface {
+	GetUserByUsername(username string) (*models.User, error)
+	InsertUser(username, password string) error
+}
+
+type UserInfoRepositoryInterfase interface {
+	GetUserInfo(userID int) (*models.InfoResponse, error)
+}
+
 type UserRepository struct {
 	db *sql.DB
 }

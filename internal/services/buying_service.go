@@ -1,12 +1,15 @@
 package services
 
-import "avito-shop/internal/repository"
+import (
+	"avito-shop/internal/repository"
+	"log"
+)
 
 type BuyingService struct {
-	purchaseRepo *repository.PurchaseRepository
+	purchaseRepo repository.PurchaseRepositoryInteface
 }
 
-func NewBuyingService(purchaseRepo *repository.PurchaseRepository) *BuyingService {
+func NewBuyingService(purchaseRepo repository.PurchaseRepositoryInteface) *BuyingService {
 	return &BuyingService{purchaseRepo: purchaseRepo}
 }
 
@@ -19,6 +22,7 @@ func (s *BuyingService) BuyItem(userId int, item string) error {
 
 	err = s.purchaseRepo.InsertBuying(userId, item, price)
 	if err != nil {
+		log.Printf("Error: %v", err)
 		return err
 	}
 

@@ -4,7 +4,6 @@ import (
 	// Импортируем секретный ключ
 	"avito-shop/internal/models"
 	"avito-shop/internal/repository"
-	"log"
 	"os"
 
 	"errors"
@@ -14,11 +13,11 @@ import (
 )
 
 type UserService struct {
-	userRepo *repository.UserRepository
+	userRepo repository.UserRepositoryInterface
 }
 
 // NewUserService создает новый экземпляр UserService
-func NewUserService(userRepo *repository.UserRepository) *UserService {
+func NewUserService(userRepo repository.UserRepositoryInterface) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 
@@ -39,7 +38,6 @@ func (s *UserService) AuthenticateUser(username, password string) (string, error
 			return "", err
 		}
 	}
-	log.Printf("Comparing: hash='%s' with password='%s'\n", user.Password, password)
 
 	// Проверяем пароль
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))

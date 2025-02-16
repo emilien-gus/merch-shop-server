@@ -13,7 +13,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-var SecretKey []byte
+var secretKey []byte
 
 func JWTMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -34,7 +34,7 @@ func JWTMiddleware() gin.HandlerFunc {
 		tokenString := parts[1]
 
 		// Загружаем секретный ключ из переменной окружения
-		if string(SecretKey) == "" {
+		if string(secretKey) == "" {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error: JWT secret is missing"})
 			c.Abort()
 			return
@@ -72,5 +72,9 @@ func InitSecretKey() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Ошибка загрузки .env файла")
 	}
-	SecretKey = []byte(os.Getenv("JWT_SECRET"))
+	secretKey = []byte(os.Getenv("JWT_SECRET"))
+}
+
+func SetSecretKey(secret string) {
+	secretKey = []byte(secret)
 }

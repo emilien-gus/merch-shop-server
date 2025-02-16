@@ -3,6 +3,7 @@ package handlers
 import (
 	"avito-shop/internal/services"
 	"errors"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,6 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 		return
 	}
 
-	// Отправляем токен клиенту
+	log.Println("done auth")
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
