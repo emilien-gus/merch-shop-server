@@ -1,7 +1,6 @@
 package services
 
 import (
-	// Импортируем секретный ключ
 	"avito-shop/internal/models"
 	"avito-shop/internal/repository"
 	"os"
@@ -16,12 +15,10 @@ type UserService struct {
 	userRepo repository.UserRepositoryInterface
 }
 
-// NewUserService создает новый экземпляр UserService
 func NewUserService(userRepo repository.UserRepositoryInterface) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 
-// AuthenticateUser проверяет учетные данные и возвращает JWT
 func (s *UserService) AuthenticateUser(username, password string) (string, error) {
 	user, err := s.userRepo.GetUserByUsername(username)
 	if err != nil {
@@ -39,13 +36,11 @@ func (s *UserService) AuthenticateUser(username, password string) (string, error
 		}
 	}
 
-	// Проверяем пароль
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return "", errors.New("wrong password")
 	}
 
-	// Генерируем JWT
 	token, err := s.generateJWT(user)
 	if err != nil {
 		return "", err
@@ -59,7 +54,7 @@ type CustomClaims struct {
 	jwt.StandardClaims
 }
 
-// generateJWT создает JWT-токен для пользователя
+// generate JWT token for user
 func (s *UserService) generateJWT(user *models.User) (string, error) {
 	claims := CustomClaims{
 		UserID: user.ID,

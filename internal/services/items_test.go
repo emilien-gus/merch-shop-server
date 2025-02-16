@@ -7,7 +7,6 @@ import (
 )
 
 func TestGetItem_Success(t *testing.T) {
-	// Тест 1: Успешное получение цены товара
 	price, err := GetItem("t-shirt")
 	assert.NoError(t, err)
 	assert.Equal(t, 80, price)
@@ -22,7 +21,6 @@ func TestGetItem_Success(t *testing.T) {
 }
 
 func TestGetItem_NotFound(t *testing.T) {
-	// Тест 2: Попытка получить цену несуществующего товара
 	price, err := GetItem("non-existent-item")
 	assert.Error(t, err)
 	assert.Equal(t, "item not found", err.Error())

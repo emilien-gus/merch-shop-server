@@ -39,29 +39,23 @@ func TestAuthenticateUser_Success(t *testing.T) {
 		Password: string(hashedPassword),
 	}
 
-	// Задаем ожидаемое поведение мока
 	mockRepo.On("GetUserByUsername", "testuser").Return(mockUser, nil)
 
-	// Вызываем тестируемую функцию
 	token, err := userService.AuthenticateUser("testuser", "password123")
 
-	// Проверяем результаты
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
-	mockRepo.AssertExpectations(t) // Проверяем, что мок вызвался корректно
+	mockRepo.AssertExpectations(t)
 }
 
 func TestAuthenticateUser_NewUserCreated(t *testing.T) {
 	mockRepo := NewMockUserRepository()
 	userService := NewUserService(mockRepo)
 
-	// 1. Первый вызов: пользователь не найден
 	mockRepo.On("GetUserByUsername", "newuser").Return(nil, nil).Once()
 
-	// 2. Создание пользователя
 	mockRepo.On("InsertUser", "newuser", "newpassword").Return(nil).Once()
 
-	// 3. Второй вызов: теперь пользователь найден
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte("newpassword"), bcrypt.DefaultCost)
 	mockUser := &models.User{
 		ID:       2,
@@ -70,13 +64,10 @@ func TestAuthenticateUser_NewUserCreated(t *testing.T) {
 	}
 	mockRepo.On("GetUserByUsername", "newuser").Return(mockUser, nil).Once()
 
-	// Запускаем тестируемый метод
 	token, err := userService.AuthenticateUser("newuser", "newpassword")
 
-	// Проверяем результат
 	assert.NoError(t, err)
 	assert.NotEmpty(t, token)
 
-	// Убеждаемся, что все методы были вызваны в нужном порядке
 	mockRepo.AssertExpectations(t)
 }
