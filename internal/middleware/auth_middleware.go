@@ -1,13 +1,16 @@
 package middleware
 
 import (
+	"avito-shop/internal/services"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
+	"github.com/joho/godotenv"
 )
 
 var SecretKey []byte
@@ -37,29 +40,26 @@ func JWTMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-			// Проверяем алгоритм подписи токена
-			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-			}
-			return SecretKey, nil
-		})
+		token, err := jwt.ParseWithClaims(
+			tokenString,
+			&services.CustomClaims{},
+			func(token *jwt.Token) (interface{}, error) {
+				if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+					return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+				}
+				return []byte(os.Getenv("JWT_SECRET")), nil
+			},
+		)
 
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: " + err.Error()})
 			c.Abort()
 			return
 		}
-
 		// Проверяем claims и устанавливаем user_id в контекст
-		if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-			if userID, exists := claims["user_id"]; exists {
-				c.Set("user_id", userID)
-				c.Next()
-				return
-			}
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token: missing user_id"})
-			c.Abort()
+		if claims, ok := token.Claims.(*services.CustomClaims); ok && token.Valid {
+			c.Set("user_id", claims.UserID)
+			c.Next()
 			return
 		}
 
@@ -69,5 +69,8 @@ func JWTMiddleware() gin.HandlerFunc {
 }
 
 func InitSecretKey() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Ошибка загрузки .env файла")
+	}
 	SecretKey = []byte(os.Getenv("JWT_SECRET"))
 }

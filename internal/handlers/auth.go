@@ -24,7 +24,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 
 	// Парсим JSON из тела запроса
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request format: " + err.Error()})
 		return
 	}
 
@@ -34,7 +34,7 @@ func (ah *AuthHandler) Login(c *gin.Context) {
 		if errors.Is(err, errors.New("wrong password")) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid password"})
 		} else {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Server error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
 		return
 	}

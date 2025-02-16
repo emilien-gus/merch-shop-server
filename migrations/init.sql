@@ -11,8 +11,7 @@ CREATE TABLE transactions (
     id SERIAL PRIMARY KEY,
     sender_id INT REFERENCES users(id),
     receiver_id INT REFERENCES users(id),
-    amount INT NOT NULL,
-    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    amount INT NOT NULL
 );
 
 -- Создание таблицы покупок
@@ -21,5 +20,5 @@ CREATE TABLE purchases (
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
     item_name TEXT NOT NULL, 
     quantity INT NOT NULL DEFAULT 1,
-    price INT NOT NULL,
+    price INT NOT NULL
 );

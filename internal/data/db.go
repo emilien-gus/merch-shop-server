@@ -3,13 +3,14 @@ package data
 import (
 	"database/sql"
 	"fmt"
-	"log"
+
+	_ "github.com/lib/pq" // Импортируем драйвер PostgreSQL
 )
 
 var DB *sql.DB
 
 const (
-	host     = "localhost"
+	host     = "postgres"
 	port     = 5432
 	user     = "postgres"
 	password = "password"
@@ -17,7 +18,7 @@ const (
 )
 
 // Init database connection
-func InitDB() {
+func InitDB() error {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
@@ -25,18 +26,24 @@ func InitDB() {
 	var err error
 	DB, err = sql.Open("postgres", psqlInfo)
 	if err != nil {
-		log.Fatalf("Database connection error: %v", err)
+		return fmt.Errorf("Database connection error: %v", err)
 	}
 
-	err = DB.Ping()
+	err = DB.Ping() // Пингуем базу данных, чтобы убедиться в подключении
 	if err != nil {
-		log.Fatalf("Failed to connect database: %v", err)
+		return fmt.Errorf("Failed to connect database: %v", err)
 	}
+	return nil
 }
 
 // Closing database
-func CloseDB() {
+func CloseDB() error {
 	if DB != nil {
-		DB.Close()
+		err := DB.Close()
+		if err != nil {
+			return err
+		}
+		return nil
 	}
+	return fmt.Errorf("DB is nil at closing")
 }

@@ -43,5 +43,5 @@ func (th *TransactionHandler) SendCoin(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "coins send successful"})
+	c.JSON(http.StatusOK, gin.H{"message": "Coins successfully sent"})
 }

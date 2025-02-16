@@ -14,18 +14,24 @@ func SetupRoutes(db *sql.DB, r *gin.Engine) {
 
 	userRep := repository.NewUserRepository(db)
 	purchRep := repository.NewPurchaseRepository(db)
+	transactRepo := repository.NewTransactionRepository(db)
 
 	userService := services.NewUserService(userRep)
 	purchSer := services.NewBuyingService(purchRep)
+	transactSer := services.NewTransactionService(transactRepo)
+	infoSer := services.NewInfoService(userRep)
 
 	userHandler := NewAuthHandler(userService)
 	purchHandler := NewBuyingHandler(purchSer)
+	transactHandler := NewTransactionHandler(transactSer)
+	infoHandler := NewInfoHandler(infoSer)
 
 	api := r.Group("/api")
 
-	api.Use(middleware.JWTMiddleware())
 	api.POST("/auth", userHandler.Login)
+
+	api.Use(middleware.JWTMiddleware())
 	api.POST("/buy/:item", purchHandler.Buy)
-	api.POST("/sendCoin")
-	api.GET("/info")
+	api.POST("/sendCoin", transactHandler.SendCoin)
+	api.GET("/info", infoHandler.UserInfo)
 }

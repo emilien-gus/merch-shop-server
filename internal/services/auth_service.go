@@ -1,9 +1,11 @@
 package services
 
 import (
-	"avito-shop/internal/middleware" // Импортируем секретный ключ
+	// Импортируем секретный ключ
 	"avito-shop/internal/models"
 	"avito-shop/internal/repository"
+	"log"
+	"os"
 
 	"errors"
 
@@ -28,12 +30,16 @@ func (s *UserService) AuthenticateUser(username, password string) (string, error
 	}
 
 	if user == nil {
-		s.userRepo.InsertUser(username, password)
+		err = s.userRepo.InsertUser(username, password)
+		if err != nil {
+			return "", err
+		}
 		user, err = s.userRepo.GetUserByUsername(username)
 		if err != nil {
 			return "", err
 		}
 	}
+	log.Printf("Comparing: hash='%s' with password='%s'\n", user.Password, password)
 
 	// Проверяем пароль
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
@@ -44,19 +50,25 @@ func (s *UserService) AuthenticateUser(username, password string) (string, error
 	// Генерируем JWT
 	token, err := s.generateJWT(user)
 	if err != nil {
-		return "", errors.New("Token generation error")
+		return "", err
 	}
 
 	return token, nil
 }
 
+type CustomClaims struct {
+	UserID int `json:"user_id"`
+	jwt.StandardClaims
+}
+
 // generateJWT создает JWT-токен для пользователя
 func (s *UserService) generateJWT(user *models.User) (string, error) {
-	claims := jwt.MapClaims{
-		"user_id":  user.ID,
-		"username": user.Username,
+	claims := CustomClaims{
+		UserID: user.ID,
 	}
 
+	claims.UserID = user.ID
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString([]byte(middleware.SecretKey)) // Используем секрет из middleware
+	return token.SignedString([]byte(os.Getenv("JWT_SECRET")))
 }
