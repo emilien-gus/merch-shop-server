@@ -19,6 +19,7 @@ cd avito-shop
 
 ```bash
 docker-compose up --build
+```
 
 ### 3. Запуск тестов
 
@@ -27,7 +28,7 @@ docker-compose up --build
 ```bash
 docker exec -it avito-shop-service  bash
 go test -v ./...
-
+```
 ### 4. Вопросы и решения
 
 почему используется метод GET для /api/buy/{item}?
