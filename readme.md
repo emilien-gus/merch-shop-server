@@ -13,6 +13,7 @@
 ```bash
 git clone https://github.com/yourusername/avito-shop.git
 cd avito-shop
+```
 
 ### 2. Запуск проекта
 
